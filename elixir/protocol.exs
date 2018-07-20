@@ -20,6 +20,16 @@ defimpl Printer, for: Add do
   end
 end
 
+defmodule Negation do
+  defstruct [:expression]
+
+  defimpl Printer do
+    def show(%Negation{expression: expression}) do
+      "-(#{Printer.show(expression)})"
+    end
+  end
+end
+
 ExUnit.start()
 
 defmodule MathProtocolTest do
@@ -49,5 +59,23 @@ defmodule MathProtocolTest do
       }
     }
     assert Printer.show(addition) == "3 + 4 + 5"
+  end
+
+  test "printing negated literal" do
+    neg = %Negation{expression: %Literal{number: 6}}
+    assert Printer.show(neg) == "-(6)"
+  end
+
+  test "printing nested addition with negation" do
+    addition = %Add{
+      left: %Literal{number: 3},
+      right: %Negation{expression:
+        %Add{
+          left: %Literal{number: 4},
+          right: %Literal{number: 5},
+        }
+      }
+    }
+    assert Printer.show(addition) == "3 + -(4 + 5)"
   end
 end
