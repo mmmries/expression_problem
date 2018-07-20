@@ -33,4 +33,29 @@ defmodule MathProtocolTest do
     }
     assert Printer.show(addition) == "3 + -(4 + 5)"
   end
+
+  test "eval a literal" do
+    assert Evaluator.eval(%Literal{number: 3}) == 3
+  end
+
+  test "eval an addition" do
+    assert Evaluator.eval(
+      %Add{
+        left: %Literal{number: 3},
+        right: %Literal{number: 2},
+      }
+    ) == 5
+  end
+
+  test "eval nested addition" do
+    assert Evaluator.eval(
+      %Add{
+        left: %Add{
+          left: %Literal{number: 3},
+          right: %Literal{number: 7},
+        },
+        right: %Literal{number: 2},
+      }
+    ) == 12
+  end
 end
