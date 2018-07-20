@@ -30,6 +30,26 @@ defmodule Negation do
   end
 end
 
+defprotocol Evaluator do
+  def eval(expression)
+end
+
+defimpl Evaluator, for: Literal do
+  def eval(%Literal{number: number}), do: number
+end
+
+defimpl Evaluator, for: Add do
+  def eval(%Add{left: left, right: right}) do
+    Evaluator.eval(left) + Evaluator.eval(right)
+  end
+end
+
+defimpl Evaluator, for: Negation do
+  def eval(%Negation{expression: expression}) do
+    Evaluator.eval(expression) * -1
+  end
+end
+
 ExUnit.start()
 
 defmodule MathProtocolTest do
@@ -77,5 +97,18 @@ defmodule MathProtocolTest do
       }
     }
     assert Printer.show(addition) == "3 + -(4 + 5)"
+  end
+
+  test "eval'ing an expression" do
+    expression = %Negation{
+      expression: %Add{
+        left: %Negation{expression: %Literal{number: 4}},
+        right: %Add{
+          left: %Literal{number: 4},
+          right: %Literal{number: 3},
+        }
+      }
+    }
+    assert Evaluator.eval(expression) == -3
   end
 end
