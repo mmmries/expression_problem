@@ -18,6 +18,12 @@ defmodule Printer do
   def show(%Negation{expression: expression}), do: "-(#{show(expression)})"
 end
 
+defmodule Evaluator do
+  def eval(%Literal{number: num}), do: num
+  def eval(%Add{left: left, right: right}), do: eval(left) + eval(right)
+  def eval(%Negation{expression: expression}), do: eval(expression) * -1
+end
+
 ExUnit.start()
 
 defmodule PatternMatchingTest do
@@ -54,5 +60,30 @@ defmodule PatternMatchingTest do
       }
     }
     assert Printer.show(addition) == "3 + -(4 + 5)"
+  end
+
+  test "eval a literal" do
+    assert Evaluator.eval(%Literal{number: 3}) == 3
+  end
+
+  test "eval an addition" do
+    assert Evaluator.eval(
+      %Add{
+        left: %Literal{number: 3},
+        right: %Literal{number: 2},
+      }
+    ) == 5
+  end
+
+  test "eval nested addition" do
+    assert Evaluator.eval(
+      %Add{
+        left: %Add{
+          left: %Literal{number: 3},
+          right: %Negation{expression: %Literal{number: 7}},
+        },
+        right: %Literal{number: 2},
+      }
+    ) == -2
   end
 end
