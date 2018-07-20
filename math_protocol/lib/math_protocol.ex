@@ -1,18 +1,12 @@
-defmodule MathProtocol do
-  @moduledoc """
-  Documentation for MathProtocol.
-  """
+defmodule Literal do
+  defstruct [:number]
+end
 
-  @doc """
-  Hello world.
+defmodule Add do
+  defstruct [:left, :right]
+end
 
-  ## Examples
-
-      iex> MathProtocol.hello
-      :world
-
-  """
-  def hello do
-    :world
-  end
+defmodule Printer do
+  def show(%Literal{number: num}), do: "#{num}"
+  def show(%Add{left: left, right: right}), do: "#{show(left)} + #{show(right)}"
 end
