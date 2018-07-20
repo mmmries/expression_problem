@@ -3,7 +3,12 @@ defmodule MathProtocolTest do
 
   test "printing a literal" do
     two = %Literal{number: 2}
-    assert Printer.show(two)
+    assert Printer.show(two) == "2"
+  end
+
+  test "printing negated literal" do
+    two = %Negation{expression: %Literal{number: 2}}
+    assert Printer.show(two) == "-(2)"
   end
 
   test "printing an addition" do
@@ -19,11 +24,13 @@ defmodule MathProtocolTest do
   test "printing nested addition" do
     addition = %Add{
       left: %Literal{number: 3},
-      right: %Add{
-        left: %Literal{number: 4},
-        right: %Literal{number: 5},
+      right: %Negation{expression: 
+        %Add{
+          left: %Literal{number: 4},
+          right: %Literal{number: 5},
+        }
       }
     }
-    assert Printer.show(addition) == "3 + 4 + 5"
+    assert Printer.show(addition) == "3 + -(4 + 5)"
   end
 end
